@@ -17,11 +17,11 @@ public class DbUtil {
 
     // MySQL QUERIES
 
-    private static final String DELETE_QUERY = "DELETE * FROM tableName where id = ?";
+    private static final String INSERT = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+    private static final String DELETE_QUERY = "DELETE FROM tableName where id = ?";
     private static final String LIST_USER_WITH_ID = "SELECT * FROM tableName WHERE id = ?";
     private static final String LIST_ALL = "SELECT * FROM tableName";
-    private static final String UPDATE = "UPDATE tableName SET ? = ? WHERE id = ?";
-    private static final String INSERT = "INSERT INTO users (email, username, password) VALUES (?, ?, ?)";
+    private static final String UPDATE = "UPDATE tableName SET ? = ? WHERE id = `?`";
 
 
     // METHODS
@@ -37,10 +37,19 @@ public class DbUtil {
     }
 
     public static void listUserWithId(Connection connection, String tableName, int id) {
-        try (PreparedStatement statement =
-                     connection.prepareStatement(LIST_USER_WITH_ID.replace("tableName", tableName));) {
+        try (PreparedStatement statement = connection.prepareStatement(LIST_USER_WITH_ID.replace("tableName", tableName))) {
+
+
             statement.setInt(1, id);
-            statement.executeUpdate();
+
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+
+            id = resultSet.getInt("id");
+            String email = resultSet.getString("email");
+            String username = resultSet.getString("username");
+            String password = resultSet.getString("password");
+            System.out.println("id: " + id + " | email: " + email + " | username: " + username + " | password: " + password);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,8 +58,14 @@ public class DbUtil {
     public static void listAll(Connection connection, String tableName) {
         try (PreparedStatement statement =
                      connection.prepareStatement(LIST_ALL.replace("tableName", tableName));) {
-
-            statement.executeUpdate();
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String email = resultSet.getString("email");
+                String username = resultSet.getString("username");
+                String password = resultSet.getString("password");
+                System.out.println("id: " + id + " | email: " + email + " | username: " + username + " | password: " + password);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,7 +84,7 @@ public class DbUtil {
         }
     }
 
-    public static void insertUser(Connection connection, String tableName,  String... params) {
+    public static void insertUser(Connection connection, String tableName, String... params) {
         try (PreparedStatement statement =
                      connection.prepareStatement(INSERT.replace("tableName", tableName));) {
             statement.setString(1, params[0]);
