@@ -21,7 +21,7 @@ public class DbUtil {
     private static final String DELETE_QUERY = "DELETE FROM tableName where id = ?";
     private static final String LIST_USER_WITH_ID = "SELECT * FROM tableName WHERE id = ?";
     private static final String LIST_ALL = "SELECT * FROM tableName";
-    private static final String UPDATE = "UPDATE tableName SET ? = ? WHERE id = `?`";
+    private static final String UPDATE = "UPDATE users SET tableColumnName = ? WHERE id = ?";
 
 
     // METHODS
@@ -71,12 +71,11 @@ public class DbUtil {
         }
     }
 
-    public static void updateUserData(Connection connection, String tableName, int id, String... params) {
+    public static void updateUserData(Connection connection, String tableColumnName, int id, String... params) {
         try (PreparedStatement statement =
-                     connection.prepareStatement(UPDATE.replace("tableName", tableName));) {
+                     connection.prepareStatement(UPDATE.replace("tableColumnName", tableColumnName));) {
             statement.setString(1, params[0]);
-            statement.setString(2, params[1]);
-            statement.setInt(3, id);
+            statement.setInt(2, id);
 
             statement.executeUpdate();
         } catch (Exception e) {

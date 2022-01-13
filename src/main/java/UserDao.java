@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -5,23 +7,64 @@ import java.util.Scanner;
 public class UserDao {
 
     public static void main(String[] args) throws SQLException {
+        menu();
 
-
-        //insertUser();
-        //removeUser();
-        //listUserWithId();
-        //listAll();
-        changeUserData();
 
 
     }
 
-    public static void menu() {
+    private static void anyOtherAction() throws SQLException {
+        System.out.println("Would you like to perform any other actions \n" +
+                "Print: y - if yes,\n" +
+                "Print: n - if not, \n");
+        Scanner scan = new Scanner(System.in);
+        String input = scan.nextLine();
+
+        switch (input) {
+            case "y":
+                menu();
+                break;
+            case "n":
+                System.out.println("bye bye");
+                break;
+        }
+    }
+
+    public static void menu() throws SQLException {
         System.out.println("What action would you like to perform? \n" +
                 "Print: a - to add new user to database \n" +
                 "Print: r - to remove user from database \n" +
-                "Print: d - to display specific user");
+                "Print: d - to display specific user \n" +
+                "Print: l - to list all users \n" +
+                "Print: u - to update user email, username or password");
+
+        Scanner scan = new Scanner(System.in);
+        String input = scan.nextLine();
+
+        switch (input) {
+            case "a":
+                insertUser();
+                break;
+            case "r":
+                removeUser();
+                break;
+            case "d":
+                listUserWithId();
+            case "l":
+                listAll();
+                break;
+            case "u":
+                changeUserData();
+                break;
+        }
+        anyOtherAction();
+
+
     }
+    public static String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
 
     public static void insertUser() throws SQLException {
 
@@ -36,15 +79,17 @@ public class UserDao {
         String username = scan.nextLine();
 
         System.out.println("Insert your password: ");
-        String password = scan.nextLine();
+        String password = hashPassword(scan.nextLine());
+        System.out.println(password);
+
 
         try (Connection connection = DbUtil.connect("workshop2")) {
             DbUtil.insertUser(connection, "users", email, username, password);
             System.out.println("User added");
         }
 
-
     }
+
 
     public static void removeUser() throws SQLException {
         Scanner scan = new Scanner(System.in);
@@ -83,7 +128,7 @@ public class UserDao {
         Scanner scan2 = new Scanner(System.in);
 
         System.out.println("Select user by printing it's ID: \n");
-        int id = scan2.nextInt();
+        int id = scan.nextInt();
 
         System.out.println("What user parameter you would like to change?\n" +
                 "Print e for email\n" +
@@ -92,21 +137,21 @@ public class UserDao {
                 "Print m to to go back to menu");
 
 
-        String input = scan.nextLine();
+        String input = scan2.nextLine();
 
         try (Connection connection = DbUtil.connect("workshop2")) {
             if (input.equals("e")) {
                 System.out.println("Insert new email:\n");
-                DbUtil.updateUserData(connection,"users",id,"email",scan.nextLine());
+                DbUtil.updateUserData(connection, "email", id, scan2.nextLine());
             } else if (input.equals("u")) {
                 System.out.println("Insert new username:\n");
-                DbUtil.updateUserData(connection,"users",id,"username",scan.nextLine());
+                DbUtil.updateUserData(connection, "username", id, scan2.nextLine());
 
             } else if (input.equals("p")) {
                 System.out.println("Insert new password:\n");
-                DbUtil.updateUserData(connection,"users",id,"password",scan.nextLine());
+                DbUtil.updateUserData(connection, "password", id, hashPassword(scan2.nextLine()));
 
-            }else if (input.equals("m")) {
+            } else if (input.equals("m")) {
                 menu();
             }
         }
