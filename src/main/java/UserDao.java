@@ -8,9 +8,6 @@ public class UserDao {
 
     public static void main(String[] args) throws SQLException {
         menu();
-
-
-
     }
 
     private static void anyOtherAction() throws SQLException {
@@ -61,6 +58,7 @@ public class UserDao {
 
 
     }
+
     public static String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
@@ -80,12 +78,10 @@ public class UserDao {
 
         System.out.println("Insert your password: ");
         String password = hashPassword(scan.nextLine());
-        System.out.println(password);
 
 
         try (Connection connection = DbUtil.connect("workshop2")) {
             DbUtil.insertUser(connection, "users", email, username, password);
-            System.out.println("User added");
         }
 
     }
@@ -154,10 +150,7 @@ public class UserDao {
             } else if (input.equals("m")) {
                 menu();
             }
+
         }
-
-
     }
-
-
 }

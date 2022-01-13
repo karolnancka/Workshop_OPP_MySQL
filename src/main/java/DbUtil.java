@@ -78,8 +78,10 @@ public class DbUtil {
             statement.setInt(2, id);
 
             statement.executeUpdate();
+            System.out.println("User data updated");
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("There is already user with the same email");
         }
     }
 
@@ -91,8 +93,9 @@ public class DbUtil {
             statement.setString(3, params[2]);
 
             statement.executeUpdate();
+            System.out.println("User added");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("There is already user with the same email");
         }
     }
 }
