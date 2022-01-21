@@ -81,7 +81,7 @@ public class DbUtil {
             System.out.println("User data updated");
 
         } catch (Exception e) {
-            System.out.println("There is already user with the same email");
+            System.out.println("There is already user with the same email ");
         }
     }
 
